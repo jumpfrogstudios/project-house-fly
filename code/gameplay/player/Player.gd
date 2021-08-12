@@ -1,10 +1,13 @@
 extends KinematicBody
 
+var in_air = true
+
 onready var camera = $Pivot/Camera
 
 var gravity = -30
 var max_speed = 8
 var mouse_sensitivity = 0.002  # radians/pixel
+var fly_speed = 8
 
 
 var velocity = Vector3()
@@ -34,6 +37,16 @@ func _unhandled_input(event):
 		$Pivot.rotation.x = clamp($Pivot.rotation.x, -1.2, 1.2)
 
 func _physics_process(delta):
+	if(in_air):
+		air_control(delta)
+	else:
+		ground_control(delta)
+
+func air_control(delta):
+	var facing = -global_transform.basis.z
+	move_and_slide(facing * fly_speed)
+	
+func ground_control(delta):
 	velocity.y += gravity * delta
 	var desired_velocity = get_input() * max_speed
 
